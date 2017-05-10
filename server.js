@@ -23,6 +23,7 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 
+app.use("/bower_components", express.static(__dirname +  "/bower_components"));
 var db;
 
 var requestCounter = 0;
@@ -163,7 +164,7 @@ app.post("/toggleCompleted", function (req, res) {
         { $set: {completed: completed}}
     );
 
-    res.json({id: id.toString()});
+    res.json({id: id.toString(), status: completed});
 });
 
 app.post("/deleteall", function (req, res) {

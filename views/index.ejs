@@ -15,8 +15,7 @@
       <li class="todo"  data-completed="<%= todos[i].completed %>" id="<%= todos[i]._id %>" >
          <div>
             <span><%= todos[i].name %></span>
-            <span><%= todos[i].todo %></span>
-            <%= todos[i].completed %>
+            <span class="ux-after"><%= todos[i].todo %></span>
             <%if (todos[i].completed) {%>
                 <span class="todo-completed">&#x2713;</span>
             <% } %>
@@ -56,12 +55,19 @@
       },
       body: data
     }).then (function (response) {
-       response.json().then(function (id) {
-         console.log(id);
-         var li = document.getElementById(id.id);
+       response.json().then(function (response) {
+         console.log(response);
+         var $li =$("#" + response.id);
+
+         $li.attr("data-completed", response.status);
+         if (response.status=="false") {
+           $li.find(".todo-completed").remove();
+         } else {
+           //  <span class="todo-completed">&#x2713;</span>
+           $li.find("div .ux-after").append('<span class="todo-completed">&#x2713;</span>');
+         }
        })
     });
-
   }
 
 </script>
