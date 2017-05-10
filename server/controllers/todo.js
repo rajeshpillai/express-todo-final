@@ -44,10 +44,11 @@ exports.RecentlyCompleted =  function (req, res) {
 exports.ToggleCompleted = function (req, res) {
     var db = req.db;
     var isAjax = req.xhr || (req.headers.accept.indexOf("json") > -1);
-    console.log("isAJAX: ", isAjax);
-    var id = new mongodb.ObjectID(req.body.id);
-    var completed = req.body.completed;
+    console.log("isAJAX: ", isAjax, req.params.id, req.body.id);
+    var id = new mongodb.ObjectID(req.body.id || req.params.id);
+    var completed = (req.body.completed || req.params.completed);
     completed = (completed == "true" ? "false" : "true");
+    console.log("Task: ", id, completed);
     db.collection("todos")
       .update({_id:id},
         { $set: {completed: completed}}, function (err,response) {

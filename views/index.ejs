@@ -13,11 +13,13 @@
   <% for(var i=0; i<todos.length; i++) {%>
       <li class="todo"  data-completed="<%= todos[i].completed %>" id="<%= todos[i]._id %>" >
          <div>
-            <span><%= todos[i].name %></span>
-            <span class="ux-after"><%= todos[i].todo %></span>
-            <%if (todos[i].completed == "true") {%>
-                <span class="todo-completed">&#x2713;</span>
-            <% } %>
+            <a href="/toggleCompleted/<%=todos[i]._id%>/<%=todos[i].completed%>">
+              <span><%= todos[i].name %></span>
+              <span class="ux-after"><%= todos[i].todo %></span>
+              <%if (todos[i].completed == "true") {%>
+                  <span class="todo-completed">&#x2713;</span>
+              <% } %>
+            </a>
             <a href="/delete/<%= todos[i]._id %>"  >delete</a>
             <a href="/edit/<%= todos[i]._id %>"  >edit</a>
         </div>
