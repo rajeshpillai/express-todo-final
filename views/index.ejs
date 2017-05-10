@@ -8,7 +8,9 @@
   <button type="submit">Submit</button>
 </form>
 
-<button id="action-delete" type="button">delete all</button>
+<form method="POST" action="/deleteall">
+<button type="submit" id="action-delete" type="button">delete all</button>
+</form>
 <ul class="todos" onclick="toggleCompleted(event)">
   <% for(var i=0; i<todos.length; i++) {%>
       <li class="todo"  data-completed="<%= todos[i].completed %>" id="<%= todos[i]._id %>" >
@@ -28,13 +30,6 @@
 </ul>
 
 <script type="text/javascript">
-  var el = document.getElementById("action-delete");
-
-  el.addEventListener("click", function (e) {
-    e.preventDefault();
-    var url = "http://localhost:8888/";
-    post(url + "deleteall");
-  })
 
   function post(path, params, method) {
     method = method || "post"; // Set method to post by default if not specified.
