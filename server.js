@@ -56,35 +56,5 @@ app.use(function (req, res, next) {
   next();
 })
 
-function stubTodos () {
-  var todo = {
-    name: "rajesh",
-    todo: "Task "
-  };
-  var count = 1;
-
-  function add(count) {
-    if (count > 10) return;
-
-    var task = Object.assign({}, todo,
-      {todo: "Task " + count,
-      createdAt: new Date(),
-      completed: false
-    });
-
-    if (count % 2 == 0) {
-        task.completed = true;
-    }
-
-    db.collection("todos").save(task, (err, result) => {
-        if (err) return console.log(err);
-        console.log("Saved to the database!", task._id);
-        count++;
-        add(count);
-    });
-  }
-
-  add(count);
-}
 
 require("./server/router")(app);

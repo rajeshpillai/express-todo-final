@@ -27,14 +27,36 @@
 
 <script type="text/javascript">
   var el = document.getElementById("action-delete");
+
   el.addEventListener("click", function (e) {
     e.preventDefault();
     var url = "http://localhost:8888/";
-    fetch(url + "deleteall", {
-      method: "POST"
-    }).then (function (response) {
-    });
+    post(url + "deleteall");
   })
+
+  function post(path, params, method) {
+    method = method || "post"; // Set method to post by default if not specified.
+
+    // The rest of this code assumes you are not using a library.
+    // It can be made less wordy if you use one.
+    var form = document.createElement("form");
+    form.setAttribute("method", method);
+    form.setAttribute("action", path);
+
+    for(var key in params) {
+        if(params.hasOwnProperty(key)) {
+            var hiddenField = document.createElement("input");
+            hiddenField.setAttribute("type", "hidden");
+            hiddenField.setAttribute("name", key);
+            hiddenField.setAttribute("value", params[key]);
+
+            form.appendChild(hiddenField);
+         }
+    }
+
+    document.body.appendChild(form);
+    form.submit();
+  }
 
   function toggleCompleted(e){
     if (e.target.tagName.toLowerCase() == "a") return;
@@ -43,29 +65,13 @@
     var id = el.getAttribute("id");
     var completed = el.getAttribute("data-completed");
     var url = "http://localhost:8888/";
-    var data = JSON.stringify({
+    var data = {
       id: id,
       completed: completed
-    });
-    fetch(url + "toggleCompleted", {
-      method: "POST",
-      headers: {
-            "Content-Type": "application/json"
-      },
-      body: data
-    }).then (function (response) {
-       response.json().then(function (response) {
-         console.log(response);
-         var $li =$("#" + response.id);
+    };
 
-         $li.attr("data-completed", response.status);
-         if (response.status=="false") {
-           $li.find("div .todo-completed").remove();
-         } else {
-           $li.find("div .ux-after").append('<span class="todo-completed">&#x2713;</span>');
-         }
-       })
-    });
+    post(url + "toggleCompleted", data);
+
   }
 
 </script>

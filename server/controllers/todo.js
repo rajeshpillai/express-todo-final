@@ -43,7 +43,8 @@ exports.RecentlyCompleted =  function (req, res) {
 
 exports.ToggleCompleted = function (req, res) {
     var db = req.db;
-    console.log("ENTER toggleCompleted:");
+    var isAjax = req.xhr || (req.headers.accept.indexOf("json") > -1);
+    console.log("isAJAX: ", isAjax);
     var id = new mongodb.ObjectID(req.body.id);
     var completed = req.body.completed;
     completed = (completed == "true" ? "false" : "true");
@@ -51,7 +52,12 @@ exports.ToggleCompleted = function (req, res) {
       .update({_id:id},
         { $set: {completed: completed}}, function (err,response) {
           if (err) console.log("toggleCompleted: ERROR: ", err);
-          res.json({id: id.toString(), status: completed});
+          if (isAjax) {
+            res.json({id: id.toString(), status: completed});
+          }
+          else {
+            res.redirect("/");
+          }
         }
       );
 };
@@ -82,9 +88,17 @@ exports.EditTodo = function (req, res) {
 
 exports.DeleteAll =  function (req, res) {
   var db = req.db;
+  var isAjax = req.xhr || (req.headers.accept.indexOf("json") > -1);
+
   console.log("REQUEST: deleteAll");
+
   db.collection("todos").deleteMany();
-  res.end("ok");
+
+  if (isAjax) {
+    res.end("ok");
+    return;
+  }
+  res.redirect("/");
 };
 
 exports.UpdateTodo =  function (req, res) {
