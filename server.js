@@ -51,7 +51,7 @@ MongoClient.connect(url, (err, database) => {
 });
 
 app.use(function (req, res, next) {
-  console.log("LOGGER: ", process.pid);
+  console.log("LOGGER: PID ", process.pid);
   req.db = db;
   next();
 })

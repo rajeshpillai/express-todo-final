@@ -1,11 +1,12 @@
 const mongodb = require("mongodb");
 
+
 exports.Index = function (req, res) {
     var db = req.db;
     var testData = req.query.testdata;
     //?testdata=1  (load test data)
     if (testData) {
-       stubTodos();
+       stubTodos(db);
        res.end("ok. Test data populated!");
     }
 
@@ -109,3 +110,32 @@ exports.CreateTodo = (req, res) => {
         res.redirect("/");
     });
 };
+
+function stubTodos (db) {
+  var todo = {
+    name: "rajesh",
+    todo: "Task "
+  };
+  var count = 1;
+
+  function add(count) {
+    if (count > 10) return;
+
+    var task = Object.assign({}, todo,
+      {todo: "Task " + count,
+      createdAt: new Date(),
+      completed: false
+    });
+
+    if (count % 2 == 0) {
+        task.completed = true;
+    }
+    db.collection("todos").save(task, (err, result) => {
+        if (err) return console.log(err);
+        console.log("Saved to the database!", task._id);
+        count++;
+        add(count);
+    });
+  }
+  add(count);
+}
