@@ -61,9 +61,8 @@
 
          $li.attr("data-completed", response.status);
          if (response.status=="false") {
-           $li.find(".todo-completed").remove();
+           $li.find("div .todo-completed").remove();
          } else {
-           //  <span class="todo-completed">&#x2713;</span>
            $li.find("div .ux-after").append('<span class="todo-completed">&#x2713;</span>');
          }
        })

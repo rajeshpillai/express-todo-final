@@ -61,9 +61,9 @@ function stubTodos () {
   var count = 1;
 
   function add(count) {
-    if (count > 100) return;
+    if (count > 10) return;
 
-    task = Object.assign({}, todo,
+    var task = Object.assign({}, todo,
       {todo: "Task " + count,
       createdAt: new Date(),
       completed: false
@@ -150,21 +150,17 @@ app.get("/edit/:id", function (req, res) {
 });
 
 app.post("/toggleCompleted", function (req, res) {
-    console.log("before toggle:  ", req.body.id, req.body.completed);
+    console.log("ENTER toggleCompleted:");
     var id = new mongodb.ObjectID(req.body.id);
     var completed = req.body.completed;
-
     completed = (completed == "true" ? "false" : "true");
-
-    console.log("type of: ", typeof(completed));
-    console.log("after toggle: ",completed);
-
     db.collection("todos")
       .update({_id:id},
-        { $set: {completed: completed}}
-    );
-
-    res.json({id: id.toString(), status: completed});
+        { $set: {completed: completed}}, function (err,response) {
+          if (err) console.log("toggleCompleted: ERROR: ", err);
+          res.json({id: id.toString(), status: completed});
+        }
+      );
 });
 
 app.post("/deleteall", function (req, res) {
