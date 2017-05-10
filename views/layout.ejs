@@ -1,0 +1,32 @@
+<html>
+    <head>
+        <title>My Awesome Todo App</title>
+        <link rel="stylesheet" href="style.css"/>
+    </head>
+
+    <body>
+        <%- body %>
+
+        <ul id = "latest-task" style="float:left">
+
+        </ul>
+
+        <script type="text/javascript">
+          var url = "http://localhost:8888/";
+
+          fetch(url + "recently-completed").then (function (response) {
+              var el = document.getElementById("latest-task");
+              var contentType = response.headers.get("content-type");
+              response.json().then(function (json) {
+                var list = "";
+                json.todos.forEach(function (todo) {
+                  list = list.concat("<li>" + todo.todo + "</li>");
+                });
+
+                el.innerHTML = list;
+              })
+          });
+
+        </script>
+    </body>
+</html>

@@ -1,0 +1,16 @@
+.todos {
+   float: left;
+}
+
+.todo {
+
+}
+
+#latest-task {
+  float: left;
+}
+
+.todo-completed {
+  color: green;
+  font-weight:bold;
+}

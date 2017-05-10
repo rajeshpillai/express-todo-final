@@ -1,0 +1,67 @@
+
+<h2>Todo App</h2>
+
+<form action="/todos" method="POST">
+  <input type="text" placeholder="name"
+      name="name">
+  <input type="text" placeholder="new todo"
+      name="todo">
+  <button type="submit">Submit</button>
+</form>
+
+<button id="action-delete" type="button">delete all</button>
+<ul class="todos" onclick="toggleCompleted(event)">
+  <% for(var i=0; i<todos.length; i++) {%>
+      <li class="todo"  data-completed="<%= todos[i].completed %>" id="<%= todos[i]._id %>" >
+         <div>
+            <span><%= todos[i].name %></span>
+            <span><%= todos[i].todo %></span>
+            <%= todos[i].completed %>
+            <%if (todos[i].completed) {%>
+                <span class="todo-completed">&#x2713;</span>
+            <% } %>
+            <a href="/delete/<%= todos[i]._id %>"  >delete</a>
+            <a href="/edit/<%= todos[i]._id %>"  >edit</a>
+        </div>
+      </li>
+  <% } %>
+</ul>
+
+<script type="text/javascript">
+  var el = document.getElementById("action-delete");
+  el.addEventListener("click", function (e) {
+    e.preventDefault();
+    var url = "http://localhost:8888/";
+    fetch(url + "deleteall", {
+      method: "POST"
+    }).then (function (response) {
+    });
+  })
+
+  function toggleCompleted(e){
+    if (e.target.tagName.toLowerCase() == "a") return;
+
+    var el = e.target.closest("li");
+    var id = el.getAttribute("id");
+    var completed = el.getAttribute("data-completed");
+    var url = "http://localhost:8888/";
+    var data = JSON.stringify({
+      id: id,
+      completed: completed
+    });
+    fetch(url + "toggleCompleted", {
+      method: "POST",
+      headers: {
+            "Content-Type": "application/json"
+      },
+      body: data
+    }).then (function (response) {
+       response.json().then(function (id) {
+         console.log(id);
+         var li = document.getElementById(id.id);
+       })
+    });
+
+  }
+
+</script>

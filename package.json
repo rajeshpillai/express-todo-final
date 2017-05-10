@@ -1,0 +1,21 @@
+{
+  "name": "zensar-express-todo",
+  "version": "1.0.0",
+  "description": "A simple todo app",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "todo"
+  ],
+  "author": "Rajesh Pillai",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "ejs": "^2.5.5",
+    "express": "^4.14.0",
+    "express-ejs-layouts": "^2.3.0",
+    "mongodb": "^2.2.16"
+  }
+}

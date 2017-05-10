@@ -1,0 +1,9 @@
+<h2>Edit </h2>
+  <form action="/update" method="POST">
+  <input type="hidden" name="id" value="<%= todo._id %>">
+  <input type="text" placeholder="name"  value="<%= todo.name %>"
+      name="name">
+  <input type="text" placeholder="edit todo"  value="<%= todo.todo %>"
+      name="todo">
+  <button type="submit">Submit</button>
+</form>
