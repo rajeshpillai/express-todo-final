@@ -16,10 +16,7 @@ app.use(layout);
 app.use("/public", express.static(__dirname + "/public"));
 app.use("/bower_components", express.static(__dirname +  "/bower_components"));
 
-app.use(function (req, res, next) {
-  console.log("LOGGER: ", __dirname);
-  next();
-})
+
 
 var port = 8888;
 
@@ -59,6 +56,12 @@ MongoClient.connect(url, (err, database) => {
 
 });
 
+app.use(function (req, res, next) {
+  console.log("LOGGER: ", __dirname);
+  req.db = db;
+  next();
+})
+
 function stubTodos () {
   var todo = {
     name: "rajesh",
@@ -90,57 +93,7 @@ function stubTodos () {
   add(count);
 }
 
-app.get("/", function (req, res) {
-    console.log(`REQUEST # : ${requestCounter++}`);
-
-    var testData = req.query.testdata;
-    //?testdata=1  (load test data)
-    if (testData) {
-       stubTodos();
-       res.end("ok. Test data populated!");
-    }
-
-    try {
-      var cursor = db.collection("todos")
-          .find()
-          .toArray(function(err, results) {
-              if (err)   console.log(`TO ARR: ERROR: ${requestCounter} : ${err}`);
-              res.render("index.ejs", {todos: results});
-          });
-      //res.sendFile(__dirname + "/index.html");
-    } catch (e) {
-      console.log(`ERROR: ${requestCounter} : ${e}`);
-    }
-});
-
-// Get 5 recently completed todos
-app.get("/recently-completed", function (req, res) {
-    console.log(`REQUEST # : ${requestCounter++}`);
-    try {
-      var cursor = db.collection("todos")
-          .find()
-          .sort("createdAt",-1)
-          .filter({completed: true}).
-          limit(5)
-          .toArray(function(err, results) {
-              if (err)   console.log(`TO ARR: ERROR: ${requestCounter} : ${err}`);
-              res.json({todos: results});
-          });
-      //res.sendFile(__dirname + "/index.html");
-    } catch (e) {
-      console.log(`ERROR: ${requestCounter} : ${e}`);
-    }
-});
-
-
-app.get("/delete/:id", function (req, res) {
-    console.log("deleting todo with id: ", req.params.id);
-    var id = new mongodb.ObjectID(req.params.id);
-    db.collection('todos').remove({_id: id}, function(err, collection) {
-        console.log(err);
-    });
-    res.redirect("/");
-});
+require("./server/router")(app);
 
 app.get("/edit/:id", function (req, res) {
     console.log("editing todo with id: ", req.params.id);
@@ -155,19 +108,7 @@ app.get("/edit/:id", function (req, res) {
 
 });
 
-app.post("/toggleCompleted", function (req, res) {
-    console.log("ENTER toggleCompleted:");
-    var id = new mongodb.ObjectID(req.body.id);
-    var completed = req.body.completed;
-    completed = (completed == "true" ? "false" : "true");
-    db.collection("todos")
-      .update({_id:id},
-        { $set: {completed: completed}}, function (err,response) {
-          if (err) console.log("toggleCompleted: ERROR: ", err);
-          res.json({id: id.toString(), status: completed});
-        }
-      );
-});
+
 
 app.post("/deleteall", function (req, res) {
   console.log("REQUEST: deleteAll");
