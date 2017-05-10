@@ -16,7 +16,7 @@
          <div>
             <span><%= todos[i].name %></span>
             <span class="ux-after"><%= todos[i].todo %></span>
-            <%if (todos[i].completed) {%>
+            <%if (todos[i].completed == "true") {%>
                 <span class="todo-completed">&#x2713;</span>
             <% } %>
             <a href="/delete/<%= todos[i]._id %>"  >delete</a>

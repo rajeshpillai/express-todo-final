@@ -179,7 +179,7 @@ app.post("/update", function (req, res) {
     var id = new mongodb.ObjectID(req.body.id);
     console.log("udpate: ", req.body.todo);
     db.collection("todos")
-        .update({_id:id},{name:req.body.name, todo:req.body.todo},
+        .update({_id:id},{$set: {name:req.body.name, todo:req.body.todo}},
             function(err, result){
              });
 
