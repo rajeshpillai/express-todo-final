@@ -1,5 +1,11 @@
 const mongodb = require("mongodb");
 
+const redis = require("redis"),
+      redisClient = redis.createClient();
+
+redisClient.on("connect", function () {
+    console.log("Connected to REDIS.");
+});
 
 exports.Index = function (req, res) {
     var db = req.db;
@@ -10,15 +16,36 @@ exports.Index = function (req, res) {
        res.end("ok. Test data populated!");
     }
 
-    try {
-      var cursor = db.collection("todos")
-          .find()
-          .toArray(function(err, results) {
-              if (err)   console.log(`${err}`);
-              res.render("index.ejs", {todos: results});
-          });
-    } catch (e) {
-      console.log(`${e}`);
+    redisClient.get("todos", function(err, reply) {
+        if (reply) {  // if key found
+            var todos = JSON.parse(reply);
+            console.log("redis:get:");
+            res.render("index.ejs", todos);
+        }
+        else {
+             console.log("from DB: ");
+            fetchFromDB();
+        }
+    });
+
+    function fetchFromDB() {
+        try {
+            var cursor = db.collection("todos")
+                .find()
+                .toArray(function(err, results) {
+                    if (err)   {
+                        console.log(`${err}`);
+                        return;
+                    }
+                    console.log("STORING todos in REDIS:");
+                    redisClient.set("todos", JSON.stringify({todos: results}));
+                    redisClient.expire("todos",15);
+
+                    res.render("index.ejs", {todos: results});
+                });
+            } catch (e) {
+             console.log(`${e}`);
+            }
     }
 };
 
@@ -44,11 +71,9 @@ exports.RecentlyCompleted =  function (req, res) {
 exports.ToggleCompleted = function (req, res) {
     var db = req.db;
     var isAjax = req.xhr || (req.headers.accept.indexOf("json") > -1);
-    console.log("isAJAX: ", isAjax, req.params.id, req.body.id);
     var id = new mongodb.ObjectID(req.body.id || req.params.id);
     var completed = (req.body.completed || req.params.completed);
     completed = (completed == "true" ? "false" : "true");
-    console.log("Task: ", id, completed);
     db.collection("todos")
       .update({_id:id},
         { $set: {completed: completed}}, function (err,response) {
@@ -57,7 +82,9 @@ exports.ToggleCompleted = function (req, res) {
             res.json({id: id.toString(), status: completed});
           }
           else {
-            res.redirect("/");
+            redisClient.del("todos", function (err, reply) {
+             res.redirect("/");
+            });
           }
         }
       );
