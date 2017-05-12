@@ -82,8 +82,8 @@ exports.ToggleCompleted = function (req, res) {
             res.json({id: id.toString(), status: completed});
           }
           else {
-            redisClient.del("todos", function (err, reply) {
-             res.redirect("/");
+              redisClient.del("todos", function (err, reply) {
+              res.redirect("/");
             });
           }
         }
@@ -97,7 +97,10 @@ exports.DeleteTodo = function (req, res) {
     db.collection('todos').remove({_id: id}, function(err, collection) {
         console.log(err);
     });
-    res.redirect("/");
+
+    redisClient.del("todos", function (err, reply) {
+        res.redirect("/");
+    });
 };
 
 exports.EditTodo = function (req, res) {
@@ -126,7 +129,9 @@ exports.DeleteAll =  function (req, res) {
     res.end("ok");
     return;
   }
-  res.redirect("/");
+  redisClient.del("todos", function (err, reply) {
+        res.redirect("/");
+  });
 };
 
 exports.UpdateTodo =  function (req, res) {
@@ -138,7 +143,10 @@ exports.UpdateTodo =  function (req, res) {
             function(err, result){
              });
 
-    res.redirect("/");
+
+   redisClient.del("todos", function (err, reply) {
+        res.redirect("/");
+   });
 };
 
 exports.CreateTodo = (req, res) => {
@@ -149,7 +157,9 @@ exports.CreateTodo = (req, res) => {
     db.collection("todos").save(req.body, (err, result) => {
         if (err) return console.log(err);
         console.log("Saved to the database!");
-        res.redirect("/");
+        redisClient.del("todos", function (err, reply) {
+             res.redirect("/");
+        });
     });
 };
 
